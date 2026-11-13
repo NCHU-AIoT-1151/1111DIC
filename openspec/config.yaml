@@ -1,32 +1,40 @@
 schema: spec-driven
 
-# Project context (optional)
-# Add only constraints that should guide OpenSpec artifacts and workflows.
-# Include constraints an agent cannot infer by reading the code.
-# Keep general project documentation and discoverable codebase facts out.
-# Example:
-#   context: |
-#     Designs and tasks must cover Windows, macOS, and Linux
-#     Write all artifacts in Spanish
+context: |
+  LabSteward：台灣大專校院實驗室財產管理與採購 AI Agent（管理 M1–M4、採購 P1–P4）。
+  核心原則：LLM 負責理解與協調，確定性工具負責計算，規則引擎負責合規，人負責核准。
+  使用者角色：Member（借用、請購）、Custodian 財產管理人（導入、盤點、報廢）、PI（核准）。
+  技術堆疊：Python 3.11+、具 Tool Calling 的 LLM API、LangGraph 或自寫狀態機、SQLite + SQLAlchemy、
+  BM25 + 向量混合檢索、scikit-learn / LightGBM、Playwright、python-docx / openpyxl、Streamlit。
+  限制：
+  - LLM 不得直接產生金額、門檻判定、使用年限判定或報廢決定，必須來自工具或規則引擎。
+  - 法規門檻與年限只存在 knowledge/rules.yaml，程式碼與 prompt 不得寫死；各校規定不同，須可設定。
+  - 會改變帳務狀態的動作（導入、借出、報廢、送出採購）須通過 Guardrail 與人工核准，並寫入 append-only 稽核紀錄。
+  - 採購流程必須先查詢庫存與閒置財產，再上網比價。
+  - 財產清冊與個資須去識別化後才能用於評估。
+  - 網頁擷取須遵守網站使用條款與頻率限制。
+  - Proposal 階段所有數值皆為 Expected Outcomes，不得寫成實驗結果。
+  - 文件使用繁體中文；Requirement 與 Scenario 使用英文 SHALL / MUST 與 WHEN / THEN。
 
-# Per-artifact rules (optional)
-# Add custom rules for specific artifacts.
-# Example:
-#   rules:
-#     proposal:
-#       - Keep proposals under 500 words
-#       - Always state what is out of scope
-#     tasks:
-#       - Break tasks into chunks of max 2 hours
+rules:
+  proposal:
+    - Why 段落須引用文獻或法規來源編號（如 [4]、[13]）
+    - Impact 須列出受影響的 capability、相依的 change 與預定時程週次
+  specs:
+    - 每個 Requirement 至少一個 Scenario，且 Scenario 可直接轉成 eval/tasks.jsonl 的測試任務
+    - 涉及金額或年限的 Scenario 須註明數值來自 rules.yaml
+  design:
+    - 須列出設計取捨（trade-off）、選擇理由與緩解方式
+    - 須說明哪些判斷由 LLM 負責、哪些由確定性工具或規則引擎負責
+  tasks:
+    - 最後一項須包含 openspec validate <change-id> --strict
 
-# Per-operation guidance (optional)
-# Add advisory guidance for how apply and archive work should be conducted.
-# This is separate from artifact rules above.
-# Example:
-#   operations:
-#     apply:
-#       guidance:
-#         - Keep test summaries concise
-#     archive:
-#       guidance:
-#         - Summarize the archive outcome before finishing
+operations:
+  apply:
+    guidance:
+      - 每完成一個 Scenario 對應的功能，就補上自動化測試
+      - 不得繞過人工核准節點，也不得在程式中寫死法規數值
+  archive:
+    guidance:
+      - archive 前確認 tasks.md 全部完成且 validate 通過
+      - archive 後同步更新 DESIGN.md 的 Implementation Mapping 與 Results
