@@ -27,7 +27,7 @@ LabSteward 是一個結合**財產法規知識**與**工具調用**的 Domain AI
 |---|---|---|
 | 1 | 安裝 OpenSpec，熟悉 spec-driven development | 下方「OpenSpec 使用方式」、`openspec/` |
 | 2 | 整理 A–F 摘要、5 cores、3 trade-offs、10 details | `docs/01-abstract-A2F.md`、`docs/04-deep-research.md` |
-| 3 | 將 design.md 轉為 OpenSpec workflow | `DESIGN.md` → `openspec/project.md` + `openspec/changes/*` |
+| 3 | 將 design.md 轉為 OpenSpec workflow | `DESIGN.md` → `openspec/config.yaml` + `openspec/changes/*` |
 | 4 | Introduction refactor | `docs/02-introduction.md` |
 | 5 | Related Work refactor | `docs/03-related-work.md` |
 
@@ -43,7 +43,7 @@ labsteward/
 │   ├── 03-related-work.md         # 相關研究 refactor + Article Summary Table
 │   └── 04-deep-research.md        # 5 Mindsets / 3 Controversies / 10 Questions → spec 追溯
 └── openspec/
-    ├── project.md                 # 專案脈絡、技術堆疊、領域規則、限制
+    ├── config.yaml                # OpenSpec 2.x 專案設定：context、rules、operations
     ├── specs/                     # 已實作行為的 source of truth（proposal 階段為空）
     └── changes/                   # 依時程拆成四個 change proposal
         ├── add-agent-core/        # W1–W2：Planner、Guardrail、RBAC、人工核准、稽核
@@ -65,7 +65,7 @@ openspec init
 # 3. 檢視與驗證
 openspec list                    # 列出進行中的 changes
 openspec show add-agent-core     # 檢視單一 change
-openspec validate add-agent-core --strict
+openspec validate --all --strict   # 結果：4 passed, 0 failed
 
 # 4. 實作完成後歸檔：把 change 的 spec delta 合併進 openspec/specs/
 openspec archive add-agent-core
